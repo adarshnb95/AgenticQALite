@@ -1,7 +1,8 @@
-# src/runner.py
 import time
 import requests
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
+
+from agenticqa.config_loader import ProjectConfig
 
 def run_single_happy_path(method: str, url: str, headers=None, body=None, expected_status: int = 200, timeout: int = 15):
     method = method.upper()
@@ -72,7 +73,23 @@ def execute_tests(tests: List[Dict[str, Any]], timeout: int = 15) -> Dict[str, A
                 "error": str(e)
             })
 
-    total = len(results)
-    passed_count = sum(1 for r in results if r["passed"])
-    failed_count = total - passed_count
-    return {"results": results, "summary": {"total": total, "passed": passed_count, "failed": failed_count}}
+    return results
+
+def run_tests(config: ProjectConfig) -> List[Dict[str, Any]]:
+    """
+    Bridge between ProjectConfig (from YAML) and low-level execute_tests().
+    """
+    tests: List[Dict[str, Any]] = []
+
+    for ep in config.endpoints:
+        url = config.base_url.rstrip("/") + ep.path
+        tests.append({
+            "name": ep.name,
+            "method": ep.method,
+            "url": url,
+            "headers": ep.headers or {},
+            "body": ep.body,
+            "expected_status": ep.expected_status,
+        })
+
+    return execute_tests(tests)

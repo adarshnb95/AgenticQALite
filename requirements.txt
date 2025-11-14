@@ -1,0 +1,9 @@
+fastapi
+pydantic
+datetime
+typing
+pathlib
+time
+requests
+yaml
+typer

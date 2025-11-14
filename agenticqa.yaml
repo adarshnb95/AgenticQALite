@@ -1,0 +1,11 @@
+project_name: "AgenticQALite Sandbox"
+base_url: "https://httpbin.org"
+
+endpoints:
+  - name: "happy_path_post"
+    method: "POST"
+    path: "/post"
+    body:
+      email: "a@example.com"
+      name: "Adarsh"
+    expected_status: 200

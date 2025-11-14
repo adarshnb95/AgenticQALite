@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Dict, Any
 
-from .agent.llm import call_llm
+from ..agent.llm import call_llm
 
 PROMPT_PATH = Path(__file__).resolve().parents[1] / "prompts" / "planner_system.txt"
 PLANNER_SYSTEM = PROMPT_PATH.read_text(encoding="utf-8")
