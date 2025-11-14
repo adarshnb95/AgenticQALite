@@ -1,5 +1,5 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel, Field
+from fastapi import FastAPI, HTTPException, Header
+from pydantic import BaseModel, Field, EmailStr
 from typing import Optional, Dict, Any
 from datetime import datetime
 import uuid
@@ -16,6 +16,10 @@ app = FastAPI(title="Agentic QA Lite")
 def root():
     return {"message": "Agentic QA Lite API is running"}
 
+class UserIn(BaseModel):
+    name: str
+    email: EmailStr
+
 class EndpointBody(BaseModel):
     method: str
     url: str
@@ -28,6 +32,14 @@ class RunRequest(BaseModel):
     openapi_url: Optional[str] = None
     endpoint: Optional[EndpointBody] = None
     max_tests: int = Field(default=5, ge=1, le=10)
+
+@app.post("/demo/users", status_code=201)
+def create_user(user: UserIn, authorization: str | None = Header(default=None)):
+    # simple auth
+    if authorization != "Bearer SECRET":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    # pretend we created a user
+    return {"id": 1, "name": user.name, "email": user.email}
 
 @app.post("/run_tests")
 def run_tests(body: RunRequest):
